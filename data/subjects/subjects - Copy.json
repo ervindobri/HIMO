@@ -1,0 +1,44 @@
+{
+    "Subjects": [
+        {
+            "Name": "Ervin",
+            "Age": 22,
+            "Gender": "Male"
+        },
+        {
+            "Name": "Szilvike",
+            "Age": 15,
+            "Gender": "Female"
+        },
+        {
+            "Name": "Ferineni",
+            "Age": "14",
+            "Gender": "Male"
+        },
+        {
+            "Name": "Szilviasdsa",
+            "Age": "14",
+            "Gender": "Male"
+        },
+        {
+            "Name": "Lanyvagyok",
+            "Age": 27,
+            "Gender": "Female"
+        },
+        {
+            "Name": "Neni",
+            "Age": "14",
+            "Gender": "Male"
+        },
+        {
+            "Name": "Neni",
+            "Age": "14",
+            "Gender": "Male"
+        },
+        {
+            "Name": "Helloka",
+            "Age": "14",
+            "Gender": "Male"
+        }
+    ]
+}

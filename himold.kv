@@ -1,0 +1,200 @@
+#:import Label kivy.core.text.Label
+#:set _label Label(text="\\nI am a label\\ninjected in kivy\\nmarkup string :)\\nEnjoy! --={}=--")
+#:set _another_label Label(text="Loading...\\n{}%", font_size=10, color=(1,1,0.5,1), halign="center")
+<ItemDrawer>:
+    theme_text_color: "Custom"
+    on_release: self.parent.set_color_item(self)
+
+    IconLeftWidget:
+        id: icon
+        icon: root.icon
+        theme_text_color: "Custom"
+        text_color: root.text_color
+
+
+<ContentNavigationDrawer>:
+    orientation: "vertical"
+    padding: "8dp"
+    spacing: "8dp"
+
+    AnchorLayout:
+        anchor_x: "left"
+        size_hint_y: None
+        height: avatar.height
+
+        Image:
+            id: avatar
+            size_hint: None, None
+            size: "56dp", "56dp"
+            source: "data/logo/kivy-icon-256.png"
+
+    MDLabel:
+        text: "KivyMD library"
+        font_style: "Button"
+        size_hint_y: None
+        height: self.texture_size[1]
+
+    MDLabel:
+        text: "kivydevelopment@gmail.com"
+        font_style: "Caption"
+        size_hint_y: None
+        height: self.texture_size[1]
+
+    ScrollView:
+
+        DrawerList:
+            id: md_list
+
+
+
+Screen:
+
+    NavigationLayout:
+
+        ScreenManager:
+
+            Screen:
+
+                BoxLayout:
+                    orientation: 'vertical'
+
+                    MDToolbar:
+                        title: "Navigation Drawer"
+                        elevation: 10
+                        left_action_items: [['menu', lambda x: nav_drawer.toggle_nav_drawer()]]
+
+                    Widget:
+
+
+        MDNavigationDrawer:
+            id: nav_drawer
+
+            ContentNavigationDrawer:
+                id: content_drawer
+
+<Menu>:
+    manager: screen_manager
+    orientation: "vertical"
+    BoxLayout:
+        orientation: "horizontal"
+        pos_hint:{"top":1}
+        size_hint_y: 0.1
+
+        # ActionBar:
+        #     pos_hint:{"top":1}
+        #     #size_hint_y: 0.1
+        #     ActionView:
+        #         ActionPrevious:
+        #         # uncomment searchbar for later
+        #         #SearchBar:
+        #         #    size_hint_x: 1.7
+        #         #    size_hint_y: .5
+        #         #    pos_hint: {'x': 0, 'center_y':.5}
+        #         #    on_text_validate: searchbutt.trigger_action()
+        #         ActionButton:
+        #             text: "Home"
+        #             color: 0, 1, 1, 1
+        #             on_release: root.manager.current = "home"
+        #         ActionButton:
+        #             text:"Analysis"
+        #             color: 0, 1, 1, 1
+        #             on_release: root.manager.current = "analysis"
+        #         ActionButton:
+        #             text: "Record"
+        #             color: 0, 1, 1, 1
+        #             on_release: root.manager.current = "record"
+    BoxLayout:
+        orientation: "horizontal"
+        size_hint_y: .9
+        Manager:
+            id: screen_manager
+
+# <Home>:
+#     GridLayout:
+#         orientation: "vertical"
+#         rows: 2
+#         BoxLayout:
+#             orientation: "horizontal"
+#             pos_hint:{"top":1}
+#             size_hint_y: 0.1
+#             Label:
+#                 text: "Welcome to the home page!"
+#                 font_size: 30
+#                 color: 1, 1, 1, 1   # black color text
+#                 #size_hint_y: 2
+#                 pos_hint: {'x': 0, 'center_y':.9}
+#         BoxLayout:
+#             height: 50
+#             Image:
+#                 pos_hint: {'x': -0.2}
+#                 id: imageView
+#                 source: 'resources/myo.png'
+#                 allow_stretch: False
+#             AnchorLayout:
+#                 anchor_x: 'center'
+#                 anchor_y: 'top'
+#                 Label:
+#                     text: "Make sure your MYO armband is connected and synced!"
+#                     font_size: 20
+#                     color: 1, 1, 1, 1   # white
+#                     # y: 250.0
+#                     # x: 0.0
+#                     size_hint: (1.0, 0.17)
+#
+#                 # ide jon a status, es a szovegek
+#                 Label:
+#                     id: synced_label
+#                     font_size: 20
+#                     text:
+#                     color: 0, 1, 1, 1
+#                     size_hint: (-1.0, 0.3)
+#                     width: 100.0
+#                     italic: False
+#                     bold: True
+#                     height: 50.0
+#                 Label:
+#                     id: battery_label
+#                     font_size: 20
+#                     text:
+#                     color: 0, 1, 1, 1
+#                     size_hint: (-1.0, 0.5)
+#                     width: 100.0
+#                     italic: False
+#                     bold: True
+#                     height: 50.0
+#                 AnchorLayout:
+#                     CircularProgressBar:
+#                         id: battery_progress
+#                         #pos: 100, 100
+#                         size_hint:(None,None)
+#                         height:200
+#                         width:200
+#                         max:80
+#
+# #<Analysis>:
+# #    Label:
+# #        size_hint_y: 0
+# #        text: "hello world"
+# #        color: 0, 0, 0, 1   # black color text
+# #
+# #<Record>:
+# #    Label:
+# #        text: "goodbye world lol"
+# #        color: 0, 0, 0, 1   # black color text
+#
+# <Manager>:
+#     homeScreen: homeScreen
+#     analysisScreen: analysisScreen
+#     recordScreen: recordScreen
+#
+#     Home:
+#         id: homeScreen
+#         name: 'home'
+#
+#     Analysis:
+#         id: analysisScreen
+#         name: 'analysis'
+#
+#     Record:
+#         id: recordScreen
+#         name: 'record'

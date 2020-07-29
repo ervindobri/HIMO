@@ -1,0 +1,1848 @@
+
+#:import Snackbar kivymd.uix.snackbar.Snackbar
+#:import images_path kivymd.images_path
+#:import CircularProgressBar demos.circular_progress_bar.CircularProgressBar
+#:import Label kivy.core.text.Label
+#:import AKPieChart akivymd.uix.piechart
+#:set efficiency_label Label(text="{}%", font_size=15, color=(1, 1, 1, 1), halign="center")
+#:set _label Label(text="\\nI am a label\\ninjected in kivy\\nmarkup string :)\\nEnjoy! --={}=--")
+#:set _another_label Label(text="Loading...\\n{}%", font_size=10, color=(1,1,0.5,1), halign="center")
+
+<ContentNavigationDrawer>:
+    orientation: "vertical"
+    padding: "8dp"
+    spacing: "8dp"
+    theme_text_color: app.MYOCOLOR
+    text_color: app.MYOCOLOR
+    AnchorLayout:
+        anchor_x: "center"
+        size_hint_y: None
+        height: avatar.height
+        Image:
+            id: avatar
+            size_hint: None, None
+            size: "128dp", "128dp"
+            source: "data/logo/kivy-icon-256.png"
+
+    MDLabel:
+        text: "HIMO - Health In Motion"
+        font_style: "Button"
+        theme_text_color: "Custom"
+        text_color: app.MYOCOLOR
+        size_hint_y: None
+        halign: "center"
+        height: self.texture_size[1]
+
+
+    ScrollView:
+        MDList:
+            MenuListItems:
+                # theme_text_color: "Custom"
+                # text_color: app.MYOCOLOR
+                text: "Home"
+                on_release:
+                    root.nav_drawer.set_state("close")
+                    root.screen_manager.current = "Home"
+                IconLeftWidget:
+                    icon: "home"
+
+            MenuListItems:
+                # theme_text_color: "Custom"
+                # text_color: app.MYOCOLOR
+                text: "Browse"
+                on_release:
+                    root.nav_drawer.set_state("close")
+                    root.screen_manager.current = "Browse"
+                IconLeftWidget:
+                    icon: "book-search"
+            MenuListItems:
+                # theme_text_color: "Custom"
+                # text_color: app.MYOCOLOR
+                text: "Dashboard"
+                on_release:
+                    root.nav_drawer.set_state("close")
+                    root.screen_manager.current = "Dashboard"
+                IconLeftWidget:
+                    icon: "view-dashboard"
+            MenuListItems:
+                # theme_text_color: "Custom"
+                # text_color: app.MYOCOLOR
+                text: "Exercises"
+                on_release:
+                    root.nav_drawer.set_state("close")
+                    root.screen_manager.current = "Exercises"
+                IconLeftWidget:
+                    icon: "foot-print"
+            MenuListItems:
+                # theme_text_color: "Custom"
+                # text_color: app.MYOCOLOR
+                text: "Upload"
+                on_release:
+                    root.nav_drawer.set_state("close")
+                    root.screen_manager.current = "Upload"
+                IconLeftWidget:
+                    icon: "upload"
+
+Screen:
+    id: main_screen
+    MDToolbar:
+        id: toolbar
+        pos_hint: {"top": 1}
+        elevation: 10
+        md_bg_color: app.MYOCOLOR
+        title: screen_manager.current
+        specific_text_color: app.theme_cls.text_color
+        left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
+
+
+    NavigationLayout:
+        x: toolbar.height
+
+        ScreenManager:
+            id: screen_manager
+            Home:
+                name: "Home"
+            Browse:
+                name: "Browse"
+            Dashboard:
+                name: "Dashboard"
+            Exercises:
+                name: "Exercises"
+            Upload:
+                name: "Upload"
+
+        MDNavigationDrawer:
+            id: nav_drawer
+
+            ContentNavigationDrawer:
+                screen_manager: screen_manager
+                nav_drawer: nav_drawer
+
+# region CUSTOM SNACKBAR
+<-Snackbar>
+    MDCard:
+        id: box
+        size_hint_y: None
+        height: dp(58)
+        spacing: dp(5)
+        padding: dp(10)
+        y: -self.height
+        x: root.padding
+        md_bg_color: get_color_from_hex(root.sb_color)
+        # md_bg_color: 0,0,0,1
+        radius: (5, 5, 5, 5) if root.padding else (0, 0, 0, 0)
+        elevation: 11 if root.padding else 0
+
+        MDIconButton:
+            pos_hint: {'center_y': .5}
+            icon: root.icon
+            opposite_colors: False
+
+        MDLabel:
+            id: text_bar
+            size_hint_y: None
+            height: self.texture_size[1]
+            text: root.text
+            font_size: root.font_size
+            theme_text_color: 'Custom'
+            text_color: get_color_from_hex('ffffff')
+            shorten: True
+            shorten_from: 'right'
+            pos_hint: {'center_y': .5}
+# endregion
+
+# region HOME_PAGE
+<Home>:
+    GridLayout:
+        orientation: "vertical"
+        rows: 2
+        canvas:
+            Color:
+                rgba: 0, 0.7411, 0.87, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size[0], 50
+        BoxLayout:
+            orientation: "vertical"
+            pos_hint:{"top":1}
+            size_hint_y: 0.3
+            MDLabel:
+                text: "Welcome to the home page!"
+                font_size: 30
+                color: 1, 1, 1, 1   # black color text
+                halign: "center"
+                valign: "top"
+        BoxLayout:
+            height: 50
+            Image:
+                id: imageView
+                source: 'resources/myo.png'
+                allow_stretch: False
+            GridLayout:
+                # anchor_x: 'center'
+                # anchor_y: 'top'
+                height: root.height
+                rows: 10
+                MDCard:
+                    orientation: "vertical"
+                    padding: "8dp"
+                    size_hint: None, None
+                    # size: "380dp", "580dp"
+                    focus_behavior: True
+                    ripple_behavior: True
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    height: box_top.height + label.height + box_bottom.height
+                    width: 580
+                    MDBoxLayout:
+                        id: box_top
+                        spacing: "20dp"
+                        adaptive_height: True
+                        adaptive_width: False
+                        padding:  "8dp"
+                        MDToolbar:
+                            id: label
+                            title: "Your MYO Armband "
+                            # theme_text_color: "Primary"
+                            # elevation: 10
+                            # pos_hint: {'top': 1}
+                            md_bg_color: 0, 0.7411, 0.87, 1
+                            specific_text_color: app.theme_cls.text_color
+                            AnchorLayout:
+                                anchor_x: 'right'
+                                anchor_y: 'center'
+                                IconLeftWidget:
+                                    id: icon
+                                    icon: "information-outline"
+                    MDSeparator:
+                        height: "1dp"
+
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        id: box_bottom
+                        adaptive_height: True
+                        padding: "10dp", 0, 0, 0
+                        OneLineAvatarListItem:
+                            id: connect_label
+                            text: "Connection status: "
+                            IconLeftWidget:
+                                id: connect_icon
+                                icon: "bluetooth-connect"
+                        MDSeparator:
+                            height: "1dp"
+                        OneLineAvatarListItem:
+                            id: synced_label
+                            text: "Sync status: "
+                            IconLeftWidget:
+                                id: connect_icon
+                                icon: "sync"
+                        MDSeparator:
+                            height: "1dp"
+                        OneLineAvatarListItem:
+                            battery_icon : battery_icon
+                            id: battery_label
+                            text: "Battery level: "
+                            IconLeftWidget:
+                                id: battery_icon
+                                icon: "battery-bluetooth-variant"
+                        MDSeparator:
+                            height: "1dp"
+                        AnchorLayout:
+                            anchor_x: 'center'
+                            anchor_y: 'center'
+                            size_hint_y: None
+                            height: restart_button.height*2
+                            MDLabel:
+                                id: last_update
+                                text: "LAST TIME UPDATE"
+                                font_style: "Overline"
+                            MDRectangleFlatButton:
+                                id: restart_button
+                                text: "Start MYO Connect"
+                                text_color: 1, 1, 1, 1
+                                md_bg_color: 0, 0.7411, 0.87, 1
+                                height: 50
+                                on_release:
+                                    # Snackbar(text="MYO Connect restarted", padding="100dp").show()
+                                    root.show_snackbar()
+                                    root.restart_myo()
+
+# endregion
+
+
+# region BROWSE_PAGE
+<ExerciseContent>:
+    # Left
+    MDBoxLayout:
+        orientation:"vertical"
+        MDLabel:
+            theme_text_color: "Primary"
+            text: "Correct"
+        MDLabel:
+            theme_text_color: "Primary"
+            text: "Missed"
+        MDLabel:
+            theme_text_color: "Primary"
+            text: "Total"
+    # Right
+    MDBoxLayout:
+        orientation:"vertical"
+        MDLabel:
+            text: root.correct
+            theme_text_color: "Secondary"
+            halign: "center"
+        MDLabel:
+            text: root.missed
+            theme_text_color: "Secondary"
+            halign: "center"
+        MDLabel:
+            text: str(int(root.correct) + int(root.missed))
+            theme_text_color: "Secondary"
+            halign: "center"
+
+
+
+<ResultContent>
+    orientation: "vertical"
+    spacing: "12dp"
+    size_hint: None, None
+    height: "500dp"
+    width: "550dp"
+    # md_bg_color: .77, .77, .77, 1
+    padding: 0,0,"20dp", 0
+    MDBoxLayout:
+        # spacing: "24dp"
+        orientation: "vertical"
+        MDBoxLayout:
+            orientation: "vertical"
+            spacing: dp(8)
+            MDBoxLayout:
+                id: tiptoe_results
+            MDBoxLayout:
+                id: heel_results
+            MDBoxLayout:
+                id: total_results
+        MDBoxLayout:
+            size_hint_y: 0.6
+            orientation: "vertical"
+            MDLabel:
+                font_style: "H5"
+                text: "Efficiency"
+                halign: "center"
+            MDBoxLayout:
+                width: root.width
+            AnchorLayout:
+                anchor_x: "center"
+                anchor_y: "center"
+                MDBoxLayout:
+                    size_hint: None, None
+                    size: 150, 150
+                    id: efficiency_container
+                    CircularProgressBar:
+                        # pos: self.parent.pos/2, self.parent.pos/2
+                        thickness: 10
+                        cap_style: "none"
+                        progress_colour:  root.efficiency_color
+                        background_colour: "000"
+                        cap_precision: 10
+                        max: 100
+                        min: 0
+                        widget_size: int(efficiency_container.height)
+                        label: Label(text="{}%", font_size=15, color=(1, 1, 1, 1), halign="center")
+
+
+
+
+<ResultCard>:
+    radius: [25, 25, 25, 25]
+    md_bg_color: root.bg_color
+    orientation: "vertical"
+    padding: "8dp"
+    size_hint: None, None
+    pos_hint: {"center_x": .5, "center_y": .5}
+    elevation: 5
+    GridLayout:
+        id: result_data
+        orientation: "vertical"
+        rows: 3
+        MDLabel:
+            text: root.efficiency
+            theme_text_color: "Primary"
+            font_size: self.parent.width/3
+            halign: "center"
+            valign: "center"
+    MDSeparator:
+        height: "2dp"
+
+<Content>:
+    MDLabel:
+        text: root.information
+<Browse>:
+    BoxLayout:
+        orientation: 'horizontal'
+        cols:2
+        AnchorLayout:
+            anchor_x: "left"
+            anchor_y: "top"
+            padding: "40dp","80dp","40dp","80dp"
+            size_hint: .3, 1
+            MDGridLayout:
+                orientation: "vertical"
+                md_bg_color: .11,.11,.11,1
+                radius: [15]
+                rows: 3
+                size_hint: 1, 1
+                width: self.parent.width
+                height: self.parent.height
+                MDBoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: .3
+                    MDLabel:
+                        text: "Select subject:"
+                        halign: "center"
+                    BoxLayout:
+                        size_hint_y: None
+                        height: 20
+                        width: self.parent.width
+                        MDSeparator:
+                            height: "1dp"
+                    AnchorLayout:
+                        anchor_x: "center"
+                        anchor_y: "center"
+                        MDDropDownItem:
+                            pos_hint: {"center_x": .5, "center_y": .5}
+                            id: drop_subjects
+                            md_bg_color: app.MYOCOLOR
+                            text: 'SELECT SUBJECT'
+                            on_release: root.menu.open()
+
+        AnchorLayout:
+            anchor_x: 'right'
+            anchor_y: 'top'
+            padding: "20dp","80dp","40dp","80dp"
+            MDBoxLayout:
+                orientation: 'vertical'
+                size_hint: 1, 1
+                md_bg_color: .11,.11,.11,1
+                radius: [15]
+                MDBoxLayout:
+                    orientation: "vertical"
+                    # anchor_x: 'center'
+                    # anchor_y: 'top'
+                    padding: "20dp"
+                    id: dropdown_layout
+                    spacing: 15
+                    MDBoxLayout:
+                        size_hint_y: 0.3
+                        md_bg_color: .15,.15,.15,1
+                        radius: [8]
+                        orientation: "vertical"
+                        # Selected subject info goes here
+                        MDBoxLayout:
+                            size_hint_y: 0.2
+                            orientation: "vertical"
+                            MDLabel:
+                                text: "Subject information"
+                                font_style: "H5"
+                                halign: "center"
+                                valign: "center"
+                        MDSeparator:
+                            height: "1dp"
+                        MDBoxLayout:
+                            MDBoxLayout:
+                                orientation: "vertical"
+                                MDLabel:
+                                    theme_text_color: "Primary"
+                                    text: "Name:"
+                                    halign: "center"
+                                MDLabel:
+                                    theme_text_color: "Primary"
+                                    text: "Age:"
+                                    halign: "center"
+                                MDLabel:
+                                    theme_text_color: "Primary"
+                                    text: "Gender:"
+                                    halign: "center"
+                            MDBoxLayout:
+                                orientation: "vertical"
+                                MDLabel:
+                                    # text: "Jozsi"
+                                    text: root.sname
+                                    theme_text_color: "Secondary"
+                                    halign: "center"
+                                MDLabel:
+                                    theme_text_color: "Secondary"
+                                    text: root.sage
+                                    halign: "center"
+                                MDLabel:
+                                    # text: "Male"
+                                    theme_text_color: "Secondary"
+                                    text: root.sgender
+                                    halign: "center"
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        size_hint_y: 0.85
+                        AnchorLayout:
+                            anchor_x: 'center'
+                            anchor_y: 'top'
+                            # size_hint: None,None
+                            id: view_column
+                            MDCard:
+                                md_bg_color: .15,.15,.15,1
+                                id: model_card
+                                orientation: "vertical"
+                                size_hint: None, None
+                                ripple_behavior: True
+                                height: view_column.height
+                                width: view_column.width
+                                radius: [8, 8, 8, 8]
+                                MDBoxLayout:
+                                    id: box_top
+                                    adaptive_height: True
+                                    radius: [8]
+                                    padding: "8dp"
+                                    MDLabel:
+                                        id: model_name
+                                        font_style: 'H5'
+                                        theme_text_color: "Primary"
+                                        size_hint_y: None
+                                        text: "Subject data"
+                                        halign: "center"
+                                        height: self.texture_size[1]
+                                MDSeparator:
+                                    height: "1dp"
+                                MDBoxLayout:
+                                    id: box_bottom
+                                    # adaptive_height: True
+                                    padding: "10dp", 0, 0, 0
+                                    MDBoxLayout:
+                                        orientation: "vertical"
+                                        MDBoxLayout:
+                                            size_hint_y: 0.1
+                                            MDLabel:
+                                                text: "Training plots"
+                                                halign: "center"
+                                        ScrollView:
+                                            id: scroll_images
+                                            do_scroll_x: False
+                                            bar_width: 10
+                                            bar_color: app.theme_cls.primary_color
+                                            bar_color_active: app.theme_cls.accent_color
+                                            effect_cls: "DampedScrollEffect"
+                                            scroll_type: ['bars']
+                                            scroll_wheel_distance: "20dp"
+                                    MDBoxLayout:
+                                        orientation: "vertical"
+                                        MDBoxLayout:
+                                            size_hint_y: 0.1
+                                            MDLabel:
+                                                text: "Session results"
+                                                halign: "center"
+                                        # Display charts/data
+                                        MDBoxLayout:
+                                            orientation: "vertical"
+                                            ScrollView:
+                                                do_scroll_x: True
+                                                # do_scroll_y: False
+                                                size_hint: 1,1
+                                                MDStackLayout:
+                                                    # orientation: "horizontal"
+                                                    # size_hint: 1, None
+                                                    adaptive_height: True
+                                                    width: 200
+                                                    padding: "20dp", "4dp", "4dp", "4dp"
+                                                    spacing: dp(4)
+                                                    # md_bg_color: .5,.5,.5,1
+                                                    id: scroll_results
+                                            MDBoxLayout:
+                                                # md_bg_color: 1,1,1,1
+                                                # Display average result with animation
+                                                AnchorLayout:
+                                                    anchor_x: "center"
+                                                    anchor_y: "center"
+                                                    MDBoxLayout:
+                                                        size_hint: None, None
+                                                        size: 150, 150
+                                                        id: average_container
+                                                        CircularProgressBar:
+                                                            thickness: 10
+                                                            cap_style: "none"
+                                                            progress_colour:  root.average_color
+                                                            background_colour: "000"
+                                                            cap_precision: 10
+                                                            max: 100
+                                                            min: 0
+                                                            widget_size: int(average_container.height)
+
+
+
+    GridLayout:
+        orientation: "vertical"
+        cols: 2
+        # padding: 0, root.toolbar.height , 0, 0
+        # height: self.minimum_height
+        # size_hint_y: None
+        canvas:
+            Color:
+                rgba: 0, 0.7411, 0.87, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size[0], 50
+
+<ImageList>:
+    orientation: "vertical"
+    spacing: "12dp"
+    size_hint_y: None
+    height: "300dp"
+
+<MyTile@SmartTileWithStar>
+    size_hint_y: None
+    height: "240dp"
+
+<RV>:
+    viewclass: 'Label'
+    # key_size: 'height'
+    RecycleBoxLayout:
+        padding: dp(10)
+        default_size: None, dp(56)
+        default_size_hint: 1, None
+        size_hint_y: None
+        height: self.minimum_height
+        orientation: 'vertical'
+
+<Dashboard>:
+    GridLayout:
+        rows: 3
+        orientation: "horizontal"
+        size: root.size
+
+# endregion
+
+# region EXERCISES_PAGE
+
+#region SUBJECT_INFO
+<SubjectInfo>:
+    AnchorLayout:
+        anchor_x: "center"
+        anchor_y: "center"
+        MDGridLayout:
+            # md_bg_color: 0,0,0,1
+            orientation: "vertical"
+            rows: 3
+            spacing: 2
+            MDGridLayout:
+                orientation: "horizontal"
+                cols: 2
+                MDLabel:
+                    font_style: "H6"
+                    text: "Name:"
+                    halign: "center"
+                    valign: "center"
+                MDLabel:
+                    id: name_label
+                    font_style: "H6"
+                    theme_text_color: "Secondary"
+                    text: "--name--"
+                    halign: "center"
+                    valign: "center"
+            MDGridLayout:
+                orientation: "horizontal"
+                cols: 2
+                MDLabel:
+                    font_style: "H6"
+                    text: "Age:"
+                    halign: "center"
+                    valign: "center"
+                MDLabel:
+                    id: age_label
+                    font_style: "H6"
+                    theme_text_color: "Secondary"
+                    text: "--name--"
+                    halign: "center"
+                    valign: "center"
+
+            MDGridLayout:
+                orientation: "horizontal"
+                cols: 2
+                MDLabel:
+                    font_style: "H6"
+                    text: "Gender:"
+                    text_color: "Primary"
+                    halign: "center"
+                    valign: "center"
+                MDLabel:
+                    id: gender_label
+                    font_style: "H6"
+                    theme_text_color: "Secondary"
+                    text: "--name--"
+                    halign: "center"
+                    valign: "center"
+
+#endregion
+
+#region SESSION_INFO
+<SessionInfo>:
+    tiptoe_label : tiptoe_label
+    heel_label : heel_label
+    AnchorLayout:
+        anchor_x: "center"
+        anchor_y: "center"
+        MDGridLayout:
+            orientation: "vertical"
+            rows: 3
+            spacing: 2
+            MDGridLayout:
+                orientation: "horizontal"
+                cols: 2
+                MDLabel:
+                    font_style: "H6"
+                    text: "Tip toe set:"
+                    halign: "center"
+                    valign: "center"
+                MDLabel:
+                    id: tiptoe_label
+                    font_style: "H6"
+                    theme_text_color: "Secondary"
+                    text: "--name--"
+                    halign: "center"
+                    valign: "center"
+            MDGridLayout:
+                orientation: "horizontal"
+                cols: 2
+                MDLabel:
+                    font_style: "H6"
+                    text: "Heel set:"
+                    halign: "center"
+                    valign: "center"
+                MDLabel:
+                    id: heel_label
+                    font_style: "H6"
+                    theme_text_color: "Secondary"
+                    text: "--name--"
+                    halign: "center"
+                    valign: "center"
+
+<Exercises>:
+    MDBoxLayout:
+        padding: "40dp", "0dp", "40dp", "80dp"
+        orientation: 'vertical'
+        # md_bg_color: .11, .11, .11, 1
+        size_hint_y: 0.9
+        # TOP
+        spacing: 10
+        MDGridLayout:
+            size_hint_y: 0.3
+            orientation: "horizontal"
+            cols: 3
+            padding: "40dp", "20dp", "40dp", "20dp"
+            md_bg_color: .11, .11, .11, 1
+            radius: [8]
+            spacing: 10
+            MDBoxLayout:
+                size_hint: 0.6, 1
+                cols: 3
+                md_bg_color: .15,.15,.15,1
+                radius: [15]
+                orientation: "horizontal"
+                id: subject_panel
+                MDBoxLayout:
+                    orientation: "horizontal"
+                    AnchorLayout:
+                        anchor_x: "center"
+                        anchor_y: "center"
+                        MDGridLayout:
+                            # md_bg_color: 0,0,0,1
+                            orientation: "vertical"
+                            rows: 2
+                            spacing: 10
+                            MDLabel:
+                                size_hint_y: .5
+                                font_style: "H6"
+                                text: "Select subject:"
+                                halign: "center"
+                                valign: "bottom"
+                            AnchorLayout:
+                                anchor_x: "center"
+                                anchor_y: "center"
+                                MDDropDownItem:
+                                    id: drop_models
+                                    md_bg_color: 0, 0.7411, 0.87, 1
+                                    # pos_hint: {'center_x': .5, 'center_y': .5}
+                                    text: 'SELECT MODEL'
+                                    on_release: root.models_menu.open()
+
+            MDBoxLayout:
+                size_hint: 0.6, 1
+                cols: 3
+                radius: [15]
+                md_bg_color: .15,.15,.15,1
+                orientation: "horizontal"
+                id: session_panel
+                AnchorLayout:
+                    anchor_x: "center"
+                    anchor_y: "center"
+                    MDGridLayout:
+                        # md_bg_color: 0,0,0,1
+                        orientation: "vertical"
+                        rows: 2
+                        spacing: 1
+                        MDLabel:
+                            size_hint_y: .5
+                            font_style: "H6"
+                            text: "Select session:"
+                            halign: "center"
+                            valign: "bottom"
+                        AnchorLayout:
+                            anchor_x: "center"
+                            anchor_y: "center"
+                            MDDropDownItem:
+                                id: drop_sessions
+                                md_bg_color: 0, 0.7411, 0.87, 1
+                                # pos_hint: {'center_x': .5, 'center_y': .5}
+                                text: 'SESSION'
+                                on_release: root.session_menu.open()
+            MDBoxLayout:
+                size_hint: 0.5, .4
+                md_bg_color: .15,.15,.15,1
+                radius: [10]
+                MDGridLayout:
+                    orientation: "vertical"
+                    rows: 2
+                    MDBoxLayout:
+                        MDLabel:
+                            theme_text_color: "Custom"
+                            text_color: 1, 1, 1, 1
+                            font_style: "H5"
+                            text: "MYO STATUS:"
+                            valign: "center"
+                            halign: "center"
+                        AnchorLayout:
+                            size_hint: 1, 1
+                            anchor_x: "center"
+                            anchor_y: "center"
+                            MDBoxLayout:
+                                size_hint: 0.1, 0.3
+                                canvas.before:
+                                    Color:
+                                        # rgba: self.bg_color
+                                        # rgba: root.status_color
+                                        rgba: get_color_from_hex(root.sb_color)
+                                    Ellipse:
+                                        pos: self.pos
+                                        size: self.size
+
+                    MDBoxLayout:
+                        MDLabel:
+                            theme_text_color: "Custom"
+                            text_color: 1, 1, 1, 1
+                            font_style: "H5"
+                            text: root.tiptoe_timer
+                            valign: "center"
+                            halign: "center"
+                        AnchorLayout:
+                            size_hint: 1, 1
+                            anchor_x: "center"
+                            anchor_y: "center"
+                            MyRoundFlatButton:
+                                id: start_button
+                                font_size: self.parent.size[0]/9
+                                text: "START"
+                                text_color: 1, 1, 1, 1
+                                md_bg_color: 0,1,.35,1
+                                on_release:
+                                    app.check_myo_sync()
+                                    root.start_exercises()
+
+
+        AnchorLayout:
+            anchor_x: "center"
+            MDBoxLayout:
+                size_hint_x: 0.6
+                orientation: "vertical"
+                md_bg_color: .11, .11, .11, 1
+                radius: [8]
+                MDBottomNavigation:
+                    id: session_nav
+                    panel_color: .11, .11, .11, 1
+                    MDBottomNavigationItem:
+                        name: '0'
+                        MDBoxLayout:
+                            md_bg_color: 1,1,1,1
+                            radius: [8]
+                            orientation: "vertical"
+                            MDLabel:
+                                size_hint_y: 0.3
+                                theme_text_color: "ContrastParentBackground"
+                                halign: "center"
+                                font_style: "H2"
+                                text: "SESSION STARTING IN:"
+                                height: self.texture_size[1]
+                            MDLabel:
+                                theme_text_color: "ContrastParentBackground"
+                                halign: "center"
+                                valign: "center"
+                                id: countdown_label
+                                font_style: "H1"
+                                text: str(root.countdown)
+                    # ------------ PAGE 1 ---- TIP TOE SET
+                    MDBottomNavigationItem:
+                        name: '1'
+                        # text: 'Python'
+                        icon: 'numeric-1-circle-outline'
+
+                        # Content goes here
+                        # Session first exercise set
+                        MDBoxLayout:
+                            md_bg_color: 1,1,1,1
+                            radius: [8]
+                            orientation: "vertical"
+                            MDBoxLayout:
+                                size_hint_y: 0.2
+                                elevation: 10
+                                MDLabel:
+                                    theme_text_color: "ContrastParentBackground"
+                                    text: 'TIP TOE STAND'
+                                    font_style: "H2"
+                                    halign: 'center'
+                            MDBoxLayout:
+                                # md_bg_color: .5,.5,.5,1
+                                orientation: "horizontal"
+                                AnchorLayout:
+                                    anchor_x: "center"
+                                    anchor_y: "center"
+                                    MDBoxLayout:
+                                        # md_bg_color: .3, .3, .3, 1
+                                        size_hint: None, None
+                                        size: 300, 300
+                                        id: tiptoe_circ_parent
+                                        CircularProgressBar:
+                                            # pos: self.parent.pos/2, self.parent.pos/2
+                                            thickness: 20
+                                            cap_style: "none"
+                                            progress_colour:  0, 0.7411, 0.87, 1
+                                            background_colour: "000"
+                                            cap_precision: 10
+                                            max: 100
+                                            min: 0
+                                            widget_size: int(tiptoe_circ_parent.height)
+                                    MDBoxLayout:
+                                        # md_bg_color: .15, .15, .14, 1
+                                        size_hint: None, None
+                                        size: tiptoe_circ_parent.size[0]*0.6, tiptoe_circ_parent.size[1]*0.6
+                                        Pulser:
+                                            id: tiptoe_pulser
+                                            canvas.before:
+                                                Color:
+                                                    rgba: self.bg_color
+                                                    # rgba: 0, 0.7411, 0.87, 1
+                                                Ellipse:
+                                                    pos: self.pos
+                                                    size: self.size
+                                                    # size: min(ellipse_container.size[0],ellipse_container.size[1]), min(ellipse_container.size[0],ellipse_container.size[1])
+                                    MDLabel:
+                                        theme_text_color: "ContrastParentBackground"
+                                        font_style: "H5"
+                                        id: tiptoe
+                                        valign: "center"
+                                        halign: "center"
+                                        text: "0/5"
+                    # ------------ PAGE 2 ---- HEEL SET
+                    MDBottomNavigationItem:
+                        name: '2'
+                        icon: 'numeric-2-circle-outline'
+                        # Content of second pae
+                        MDBoxLayout:
+                            md_bg_color: 1,1,1,1
+                            radius: [8]
+                            orientation: "vertical"
+                            MDBoxLayout:
+                                size_hint_y: 0.2
+                                elevation: 10
+                                MDLabel:
+                                    theme_text_color: "ContrastParentBackground"
+                                    text: 'TOE CRUNCHES'
+                                    font_style: "H2"
+                                    halign: 'center'
+
+                            MDBoxLayout:
+                                # md_bg_color: .5,.5,.5,1
+                                orientation: "horizontal"
+                                AnchorLayout:
+                                    anchor_x: "center"
+                                    anchor_y: "center"
+                                    MDBoxLayout:
+                                        # md_bg_color: .11,.11,.11,1
+                                        size_hint: None, None
+                                        size: 300, 300
+                                        id: heel_circ_parent
+                                        CircularProgressBar:
+                                            thickness: 20
+                                            cap_style: "none"
+                                            # progress_colour: "011"
+                                            progress_colour:  0, 0.7411, 0.87, 1
+                                            background_colour: "000"
+                                            cap_precision: 10
+                                            max: 100
+                                            min: 0
+                                            widget_size: int(heel_circ_parent.height)
+                                    MDBoxLayout:
+                                        # md_bg_color: .3, .3, .3, 1
+                                        size_hint: None, None
+                                        size: tiptoe_circ_parent.size[0] * 0.6, tiptoe_circ_parent.size[1] * 0.6
+                                        Pulser:
+                                            id: heel_pulser
+                                            canvas.before:
+                                                Color:
+                                                    rgba: self.bg_color
+                                                    # rgba: 0, 0.7411, 0.87, 1
+                                                Ellipse:
+                                                    # id : ellipse
+                                                    pos: self.pos
+                                                    size: self.size
+                                                    # size: self.parent.size[0], self.parent.size[0]
+                                    MDLabel:
+                                        theme_text_color: "ContrastParentBackground"
+                                        font_style: "H5"
+                                        id: heel
+                                        valign: "center"
+                                        halign: "center"
+                                        text: "0/5"
+
+                    MDBottomNavigationItem:
+                        name: '3'
+                        # text: 'JS'
+                        icon: 'numeric-3-circle-outline'
+                        MDBoxLayout:
+                            md_bg_color: 1, 1, 1, 1
+                            radius: [8]
+                            orientation: "vertical"
+                            MDBoxLayout:
+                                size_hint_y: 0.2
+                                elevation: 10
+                                MDLabel:
+                                    theme_text_color: "ContrastParentBackground"
+                                    text: 'RESULTS'
+                                    font_style: "H2"
+                                    halign: 'center'
+
+                            MDBoxLayout:
+                                # md_bg_color: .5,.5,.5,1
+                                radius: [25]
+                                size_hint_y: 1
+                                elevation: 10
+                                MDBoxLayout:
+                                    orientation: "vertical"
+                                    size_hint_x : 0.3
+                                    MDBoxLayout:
+                                        size_hint_y: .2
+                                        MDLabel:
+                                            theme_text_color: "ContrastParentBackground"
+                                            text: 'Tiptoe:'
+                                            font_style: "H5"
+                                            # font_size: self.parent.width/10
+                                            halign: 'center'
+                                    MDBoxLayout:
+                                        size_hint_y: .7
+                                        orientation: "vertical"
+                                        AnchorLayout:
+                                            anchor_x: "center"
+                                            anchor_y: "top"
+                                            id: tiptoe_chart_container
+                                        AnchorLayout:
+                                            anchor_x: "center"
+                                            anchor_y: "center"
+                                            MDBoxLayout:
+                                                size_hint_y: .4
+                                                spacing: 1
+                                                orientation: "vertical"
+                                                id: tiptoe_result_container
+
+                                MDBoxLayout:
+                                    orientation: "vertical"
+                                    size_hint_x : 0.3
+                                    MDBoxLayout:
+                                        size_hint_y: .2
+                                        MDLabel:
+                                            theme_text_color: "ContrastParentBackground"
+                                            text: 'Heel:'
+                                            font_style: "H5"
+                                            # font_size: self.parent.width/10
+                                            halign: 'center'
+                                    MDBoxLayout:
+                                        size_hint_y: .7
+                                        orientation: "vertical"
+                                        AnchorLayout:
+                                            anchor_x: "center"
+                                            anchor_y: "top"
+                                            id: heel_chart_container
+                                        AnchorLayout:
+                                            anchor_x: "center"
+                                            anchor_y: "center"
+                                            MDBoxLayout:
+                                                size_hint_y: .4
+                                                spacing: 1
+                                                orientation: "vertical"
+                                                id: heel_result_container
+
+                                MDBoxLayout:
+                                    orientation: "vertical"
+                                    size_hint_x : 0.3
+                                    MDBoxLayout:
+                                        size_hint_y: .2
+                                        MDLabel:
+                                            theme_text_color: "ContrastParentBackground"
+                                            text: 'Total:'
+                                            font_style: "H5"
+                                            # font_size: self.parent.width/10
+                                            halign: 'center'
+                                    MDBoxLayout:
+                                        size_hint_y: .7
+                                        orientation: "vertical"
+                                        spacing: 5
+                                        AnchorLayout:
+                                            anchor_x: "center"
+                                            anchor_y: "top"
+                                            id: total_chart_container
+                                        AnchorLayout:
+                                            anchor_x: "center"
+                                            anchor_y: "center"
+                                            MDBoxLayout:
+                                                size_hint_y: .4
+                                                spacing: 1
+                                                orientation: "vertical"
+                                                id: total_result_container
+                            MDBoxLayout:
+                                size_hint_y: .2
+                                AnchorLayout:
+                                    anchor_x: "center"
+                                    MDRoundFlatIconButton:
+                                        icon: "content-save-outline"
+                                        text: "Save results"
+                                        text_color: app.MYOCOLOR
+                                        # md_bg_color: 0, 0.7411, 0.87, 1
+                                        height: 50
+                                        on_release:
+                                            root.save_exercise_results()
+
+
+    GridLayout:
+        orientation: "vertical"
+        rows: 2
+        canvas.before:
+            Color:
+                rgba: 0, 0.7411, 0.87, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size[0], 50
+# endregion
+
+# endregion
+
+
+#region UPLOAD_PAGE
+<Upload>:
+    BoxLayout:
+        orientation: 'vertical'
+        rows: 3
+        AnchorLayout:
+            padding: "40dp", "80dp", "40dp", "0dp"
+            size_hint: 1, None
+            height: "250dp"
+            # blue border
+            MDBoxLayout:
+                md_bg_color: .11, .11, .11, 1
+                radius: [15]
+                AnchorLayout:
+                    anchor_x: "left"
+                    anchor_y: "center"
+                    padding: "40dp", "20dp", "20dp", "0dp"
+                    MDGridLayout:
+                        cols: 3
+                        adaptive_height: True
+                        padding: dp(4)
+                        spacing: dp(64)
+                        MDBoxLayout:
+                            adaptive_size: True
+                            orientation: "vertical"
+                            rows: 2
+                            spacing: dp(24)
+                            height: button.height + subjects_label.height
+                            MyFloatingActionButton:
+                                id: button
+                                user_font_size: "69dp"
+                                md_bg_color: 0, 0.7411, 0.87, 1
+                                text_color: 1, 1, 1, 1
+                                icon: "account-child-circle"
+                                elevation_normal: 8
+                                on_release:
+                                    root.set_tabs(subjects_label.text)
+                            MDLabel:
+                                id: subjects_label
+                                valign: "bottom"
+                                halign: "center"
+                                text: "Subjects"
+                        MDBoxLayout:
+                            adaptive_size: True
+                            orientation: "vertical"
+                            rows: 2
+                            spacing: dp(24)
+                            height: button.height + session_label.height
+                            MyFloatingActionButton:
+                                id: button
+                                user_font_size: "69dp"
+                                md_bg_color: 0, 0.7411, 0.87, 1
+                                text_color: 1, 1, 1, 1
+                                icon: "timelapse"
+                                elevation_normal: 8
+                                on_release:
+                                    root.set_tabs(session_label.text)
+                            MDLabel:
+                                id: session_label
+                                valign: "bottom"
+                                halign: "center"
+                                text: "Session"
+                        MDBoxLayout:
+                            adaptive_size: True
+                            orientation: "vertical"
+                            rows: 2
+                            spacing: dp(24)
+                            height: button.height + exercises_label.height
+                            MyFloatingActionButton:
+                                id: button
+                                user_font_size: "69dp"
+                                md_bg_color: 0, 0.7411, 0.87, 1
+                                text_color: 1, 1, 1, 1
+                                icon: "foot-print"
+                                elevation_normal: 8
+                                on_release:
+                                    root.set_tabs(exercises_label.text)
+                            MDLabel:
+                                id: exercises_label
+                                valign: "bottom"
+                                halign: "center"
+                                text: "Exercises"
+        AnchorLayout:
+            padding: "40dp", "0dp", "40dp", "20dp"
+            size_hint_y: None
+            height: 20
+            BoxLayout:
+                size_hint_y: None
+                height: 50
+                MDSeparator:
+                    height: "1dp"
+
+        AnchorLayout:
+            anchor_x: 'center'
+            anchor_y: 'bottom'
+            padding: "40dp", "20dp", "40dp", "80dp"
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: 1, 1
+                id: tabs_layout
+                canvas.before:
+                    Color:
+                        rgba: .11, .11, .11, 1
+                    RoundedRectangle:
+                        radius: [15]
+                        size: self.size
+                        pos: self.pos
+                GridLayout:
+                    size_hint: 1, .15
+                    rows: 1
+                    height: page_toolbar.height
+                    AnchorLayout:
+                        anchor_y: 'top'
+                        MDBoxLayout:
+                            adaptive_height: True
+                            adaptive_width: False
+                            orientation: "vertical"
+                            MDToolbar:
+                                id: page_toolbar
+                                title: "Current page"
+                                specific_text_color: app.theme_cls.text_color
+                                md_bg_color: app.MYOCOLOR
+                                AnchorLayout:
+                                    anchor_x: 'right'
+                                    anchor_y: 'center'
+                                    IconLeftWidget:
+                                        id: icon
+                                        icon: "information-outline"
+                SubjectsContent:
+
+    GridLayout:
+        orientation: "vertical"
+        cols: 2
+        canvas:
+            Color:
+                rgba: 0, 0.7411, 0.87, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size[0], 50
+
+
+#region EXERCISES_CONTENT
+
+<ExercisesContent>:
+    size_hint: 1, 1
+    padding: "20dp", "10dp", "20dp", "10dp"
+    MDBoxLayout:
+        # md_bg_color: 1, 1,1, 1
+        # radius: [8]
+        padding: "40dp", "4dp", "20dp", "4dp"
+        spacing: dp(40)
+        # TODO: list all trainable data
+
+        MDBoxLayout:
+            orientation: "vertical"
+            md_bg_color: app.MYOCOLOR
+            radius: [15]
+            padding: "40dp", "0dp", "20dp", "0dp"
+            size_hint: 0.6, 1
+            MDBoxLayout:
+                size_hint_y: 0.2
+                AnchorLayout:
+                    anchor_y: "top"
+                    padding: "20dp", "0dp", "20dp", "0dp"
+                    MDLabel:
+                        size_hint_y: None
+                        halign: "center"
+                        theme_text_color: "Primary"
+                        text: "EXISTING DATA"
+                        font_size: self.parent.height/15
+            MDSeparator:
+                height: "2dp"
+            # EXISTING DATA
+        MDBoxLayout:
+            orientation: "vertical"
+            # md_bg_color: app.MYOCOLOR
+            radius: [15]
+            padding: "40dp", "0dp", "40dp", "0dp"
+            MDBoxLayout:
+                size_hint_y: 0.1
+                AnchorLayout:
+                    anchor_y: "center"
+                    MDLabel:
+                        size_hint_y:  None
+                        halign: "center"
+                        theme_text_color: "Primary"
+                        text: "CREATE DATA"
+                        font_size: self.parent.parent.height*0.7
+            # RE-TRAIN MODEL
+            MDBoxLayout:
+                orientation: "vertical"
+                # md_bg_color: .5,.5,.5,1
+                spacing: dp(4)
+                MDBoxLayout:
+                    # md_bg_color: .4,.4,.4,1
+                    padding: "12dp"
+                    orientation: "horizontal"
+                    size_hint_y: 0.6
+                    id: firstrow
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        spacing: dp(16)
+                        MDBoxLayout:
+                            size_hint_y: 0.1
+                            MDLabel:
+                                halign: "left"
+                                text: "RE-TRAIN EXISTING MODEL"
+                                theme_text_color: "Secondary"
+                        MDBoxLayout:
+                            spacing: dp(16)
+                            size_hint_y: 1
+                            MDBoxLayout:
+                                spacing: dp(8)
+                                MDDropDownItem:
+                                    pos_hint: {"center_x": .5, "center_y": .5}
+                                    id: drop_models
+                                    md_bg_color: app.MYOCOLOR
+                                    text: 'SELECT MODEL'
+                                    on_release: root.models_menu.open()
+                                AnchorLayout:
+                                    anchor_x: "center"
+                                    anchor_y: "center"
+                                    id: retrain_container
+
+                            MDBoxLayout:
+                                orientation: "vertical"
+                                adaptive_width: True
+                                MDFillRoundFlatIconButton:
+                                    pos_hint: {"center_x": .5, "center_y": .5}
+                                    id: retrain_button
+                                    icon: "webhook"
+                                    md_bg_color: 0,1,.35,1
+                                    text_color: 1,1,1,1
+                                    text: "START"
+                                    on_release:
+                                        root.retrain_model()
+                                        root.retrain_progress()
+                                MDBoxLayout:
+                                    pos_hint: {"center_x": .5, "center_y": .5}
+                                    size_hint_y: 0.1
+                                    MDProgressBar:
+                                        type: "indeterminate"
+                                        id: retrain_progress
+                                        value: root.retrain_value
+                                        color: 0,1,.35,1
+                # region INFO_PANEL
+                MDBoxLayout:
+                    # md_bg_color: .6, .6, .6, 1
+                    size_hint_y: 0.5
+                    MDBoxLayout:
+                        pos_hint: {"center_x": .5, "center_y": .5}
+                        padding: "10dp"
+                        md_bg_color: 0, 0, 0, 1
+                        radius: [8]
+                        size_hint_y: 0.9
+                        spacing: 5
+                        MDBoxLayout:
+                            size_hint_x: .3
+                            MDLabel:
+                                text: "Info:"
+                                halign: "left"
+                                font_size: self.parent.height*0.8
+                        MDLabel:
+                            id: instructions
+                            texT: ""
+                            # font_style: "H6"
+                            font_size: self.parent.height / 2
+                            halign: "center"
+                # endregion
+                #region NEW_MODEL
+                MDBoxLayout:
+                    # md_bg_color: .7, .7, .7, 1
+                    padding: "12dp"
+                    orientation: "horizontal"
+                    size_hint_y: 1
+                    spacing: dp(8)
+                    id: secondrow
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        spacing: dp(16)
+                        MDBoxLayout:
+                            size_hint_y: 0.1
+                            MDLabel:
+                                halign: "left"
+                                text: "CREATE NEW MODEL"
+                                theme_text_color: "Secondary"
+                        MDBoxLayout:
+                            orientation: "vertical"
+                            # md_bg_color: .5,.5,.5,1
+                            size_hint_y: 1
+                            MDBoxLayout:
+                                # region TOP
+                                spacing: dp(8)
+                                MDDropDownItem:
+                                    pos_hint: {"center_x": .5, "center_y": .5}
+                                    id: drop_subjects
+                                    md_bg_color: app.MYOCOLOR
+                                    text: 'SELECT SUBJECT'
+                                    on_release: root.subjects_menu.open()
+                                MDFillRoundFlatIconButton:
+                                    pos_hint: {"center_x": .5, "center_y": .5}
+                                    id: train_button
+                                    icon: "webhook"
+                                    md_bg_color: 0,1,.35,1
+                                    text_color: 1,1,1,1
+                                    text: "START"
+                                    on_release:
+                                        # print("START RE TRAIN")
+                                        root.prepare_model()
+                                AnchorLayout:
+                                    anchor_x: "center"
+                                    anchor_y: "center"
+                                    id: train_container
+                                # endregion
+                            MDBoxLayout:
+                                #region BOTTOM
+                                spacing: dp(8)
+                                MDLabel:
+                                    # id: trainable_datafile
+                                    text: root.trainable_datafile
+                                    halign: "center"
+                                    theme_text_color: "Primary"
+                                MDBoxLayout:
+                                    orientation: "vertical"
+                                    spacing: dp(8)
+                                    adaptive_width: True
+                                    MDFillRoundFlatIconButton:
+                                        pos_hint: {"center_x": .5, "center_y": .5}
+                                        id: train_button
+                                        icon: "clock-start"
+                                        md_bg_color: 1,.75,.12,1
+                                        text_color: 1,1,1,1
+                                        text: "TRAIN DATA"
+                                        on_release:
+                                            root.train_model()
+                                            root.train_progress()
+                                    MDBoxLayout:
+                                        pos_hint: {"center_x": .5, "center_y": .5}
+                                        padding_top: "10dp"
+                                        size_hint: 1, 0.1
+                                        width: train_button.width
+                                        MDProgressBar:
+                                            type: "indeterminate"
+                                            value: root.train_value
+                                            color: 1,.75,.12,1
+
+                                #endregion
+                # endregion
+        # TODO: list all training models
+
+
+#end region
+
+
+# region SESSION_CONTENT
+
+# region ADDSESSION
+<AddSessionContent>
+    orientation: "vertical"
+    spacing: "12dp"
+    size_hint_y: None
+    height: "350dp"
+    tiptoe : tiptoe_slider.value
+    heel : heel_slider.value
+    MDLabel:
+        text: "Choose a number for each exercise!"
+
+    MDGridLayout:
+        orientation: "horizontal"
+        cols: 2
+        MDLabel:
+            text: "Tip toe"
+        MDSlider:
+            id: tiptoe_slider
+            # thumb_color: 0, 0.7411, 0.87, 1
+            # thumb_color_down: 1,1,1,1
+            min: 0
+            max: 15
+            value: root.tiptoe
+            hint_radius: 20,20
+            hint_text_color: 0, 0.7411, 0.87, 1
+            hint_bg_color: self.parent.md_bg_color
+    MDGridLayout:
+        orientation: "horizontal"
+        cols: 2
+        MDLabel:
+            text: "Toe crunches"
+        MDSlider:
+            id: heel_slider
+            # thumb_color: 0, 0.7411, 0.87, 1
+            # thumb_color_down: 1,1,1,1
+            min: 0
+            max: 15
+            value: root.heel
+            hint_radius: 20,20
+            hint_text_color: 0, 0.7411, 0.87, 1
+            hint_bg_color: self.parent.md_bg_color
+
+
+<SessionListItem>:
+    text: root.text
+    # theme_text_color: 'ContrastParentBackground'
+    bg_color: app.MYOCOLOR
+    divider: 'Inset'
+    IconLeftWidget:
+        icon: root.icon
+
+    # this is an mdgridlayout(IRightBodyTouch, MDGridLayout)
+    RightLayout:
+        padding: 0,0,"20dp",0
+        MDCheckbox:
+            on_active: root.on_checkbox_active(*args)
+            selected_color: .11,.11,.11,1
+
+# endregion
+
+<SessionContent>:
+    size_hint: 1, .7
+    padding: "20dp", "0dp", "20dp", "40dp"
+    adaptive_width: False
+    MDBoxLayout:
+        # md_bg_color: 1, 1,1, 1
+        # radius: [8]
+        padding: "40dp", "4dp", "40dp", "4dp"
+        # List content goes here
+        ScrollView:
+            do_scroll_y: True
+            bar_color: app.theme_cls.primary_color
+            bar_color_active: app.theme_cls.accent_color
+            effect_cls: "DampedScrollEffect"
+            scroll_type: ['bars']
+            scroll_wheel_distance: "30dp"
+            MDList:
+                id: session_list
+
+
+    MDBoxLayout:
+        orientation: "vertical"
+        size_hint: .4, 1
+        md_bg_color: app.MYOCOLOR
+        radius: [8]
+        padding: "40dp", "4dp", "40dp", "4dp"
+        MDGridLayout:
+            orientation: "vertical"
+            cols: 2
+            MDLabel:
+                halign: "center"
+                valign: "center"
+                # theme_text_color: "ContrastParentBackground"
+                text_color: 1,1,1,1
+                text: "Add Session"
+            AnchorLayout:
+                anchor_x: "center"
+                anchor_y: "center"
+                MyFloatingActionButtonVariant:
+                    id: button
+                    user_font_size: "36dp"
+                    md_bg_color: 1, 1, 1, 1
+                    text_color: 0, 0.7411, 0.87, 1
+                    icon: "calendar-plus"
+                    elevation_normal: 8
+                    on_release:
+                        root.open_add_session_dialog()
+        MDGridLayout:
+            orientation: "vertical"
+            cols: 2
+            MDLabel:
+                halign: "center"
+                valign: "center"
+                # theme_text_color: "ContrastParentBackground"
+                text_color: 1, 1, 1, 1
+                text: "Remove Session"
+            AnchorLayout:
+                anchor_x: "center"
+                anchor_y: "center"
+                MyFloatingActionButtonVariant:
+                    id: button
+                    user_font_size: "36dp"
+                    md_bg_color: 1, 1, 1, 1
+                    text_color: 0, 0.7411, 0.87, 1
+                    icon: "calendar-remove-outline"
+                    elevation_normal: 8
+                    on_release:
+                        root.open_remove_session_dialog()
+
+# endregion
+
+# region SUBJECTS_CONTENT
+<SubjectsContent>:
+    size_hint: 1, .7
+    padding: "20dp", "0dp", "20dp", "40dp"
+    adaptive_width: False
+    # Left scrollview - Contains the SUBJECTS CARD
+    BoxLayout:
+        size_hint: .2, 1
+        padding: "4dp", "4dp", "40dp", "4dp"
+        ScrollView:
+            # do_scroll_x: True
+            do_scroll_y: True
+            bar_color: app.theme_cls.primary_color
+            bar_color_active: app.theme_cls.accent_color
+            effect_cls: "DampedScrollEffect"
+            scroll_type: ['bars']
+            scroll_wheel_distance: "10dp"
+            MDGridLayout:
+                md_bg_color: 1, 1, 1, 1
+                radius: [8]
+                # cols: 1
+                rows: 2
+                padding: "20dp"
+                size_hint: 1, 1
+                spacing: dp(4)
+                MyCard:
+                    id: card
+                    radius: [15, 15, 15, 15]
+                    md_bg_color: 0, 0.7411, 0.87, 1
+                    orientation: "vertical"
+                    size_hint: .85, None
+                    # size: "280dp", "280dp"
+                    height: self.parent.height/ self.parent.rows
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    elevation: 5
+                    MDLabel:
+                        text: "SUBJECTS"
+                        theme_text_color: "Primary"
+                        halign: "center"
+                        valign: "center"
+                        # size_hint_y: None
+                        # font_style: "H3"
+                        font_size: self.height/3
+                        height: self.parent.height * 0.5
+                    MDSeparator:
+                        height: "2dp"
+                    GridLayout:
+                        padding: dp(4)
+                        spacing: dp(4)
+                        # orientation: "horizontal"
+                        cols: 2
+                        AnchorLayout:
+                            anchor_x: "center"
+                            anchor_y: "center"
+                            MyFloatingActionButtonVariant:
+                                id: button
+                                user_font_size: "36dp"
+                                md_bg_color: 1, 1, 1, 1
+                                text_color: 0, 0.7411, 0.87, 1
+                                icon: "account-plus-outline"
+                                elevation_normal: 8
+                                on_release:
+                                    root.open_add_subject_dialog()
+                        AnchorLayout:
+                            anchor_x: "center"
+                            anchor_y: "center"
+                            MyFloatingActionButtonVariant:
+                                id: refresh_button
+                                user_font_size: "36dp"
+                                md_bg_color: 1, 1, 1, 1
+                                text_color: 0, 0.7411, 0.87, 1
+                                icon: "refresh-circle"
+                                elevation_normal: 8
+                                on_release:
+                                    # root.refresh_callback()
+                                    root.parent.parent.parent.parent.set_tabs("Subjects")
+
+    MDBoxLayout:
+        size_hint: .8, 1
+        padding: "40dp", "4dp", "4dp", "4dp"
+        md_bg_color: 1, 1, 1, 1
+        radius: [8]
+        MDScrollViewRefreshLayout:
+            id: refresh_layout
+            # refresh_callback: root.refresh_callback
+            root_layout: root
+            do_scroll_y: True
+            # do_scroll_y: True
+            bar_color: app.theme_cls.primary_color
+            bar_color_active: app.theme_cls.accent_color
+            effect_cls: "DampedScrollEffect"
+            scroll_type: ['bars']
+            MDStackLayout:
+                id: subject_cards
+                # yellow border
+                orientation: 'lr-tb'
+                adaptive_height: True
+                width: self.parent.width
+                height: self.parent.height
+                padding: "20dp", "4dp", "4dp", "4dp"
+                spacing: dp(4)
+                # Cards are adding here...
+
+# endregion
+
+<MySubjectCard>:
+    radius: [15, 15, 15, 15]
+    md_bg_color: app.MYOCOLOR
+    orientation: "vertical"
+    padding: "8dp"
+    size_hint: None, None
+    pos_hint: {"center_x": .5, "center_y": .5}
+    elevation: 5
+    GridLayout:
+        id: subject_data
+        orientation: "vertical"
+        rows: 3
+        MDLabel:
+            id: title
+            text: "Name"
+            theme_text_color: "Primary"
+            halign: "center"
+            valign: "center"
+    MDSeparator:
+        height: "2dp"
+    GridLayout:
+        padding: dp(4)
+        spacing: dp(4)
+        cols: 2
+        AnchorLayout:
+            anchor_x: "center"
+            anchor_y: "center"
+            MyFloatingActionButtonVariant:
+                id: modify_button
+                user_font_size:  "23sp"
+                md_bg_color: 1, 1, 1, 1
+                text_color: 0, 0.7411, 0.87, 1
+                icon: "table-edit"
+                elevation_normal: 8
+                on_release:
+                    root.open_edit_subject_dialog()
+        AnchorLayout:
+            anchor_x: "center"
+            anchor_y: "center"
+            MyFloatingActionButtonVariant:
+                id: delete_button
+                user_font_size: "23sp"
+                md_bg_color: 1, 1, 1, 1
+                text_color: 0, 0.7411, 0.87, 1
+                icon: "delete-forever-outline"
+                elevation_normal: 8
+                on_release:
+                    root.open_delete_subject_dialog()
+
+
+<Check>:
+    group: 'group'
+    size_hint: None, None
+    size: dp(48), dp(48)
+    on_active: root.on_checkbox_active(*args)
+
+# This is the dialog content, displaying the add subject form
+<AddSubjectContent>
+    orientation: "vertical"
+    spacing: "12dp"
+    size_hint_y: None
+    height: "350dp"
+    name : name_textfield.text
+    age : age_slider.value
+    # gender : gender
+    MDTextField:
+        id: name_textfield
+        hint_text: "Name"
+        text: root.name
+
+    MDGridLayout:
+        orientation: "horizontal"
+        cols: 2
+        MDLabel:
+            text: "Age"
+        MDSlider:
+            id: age_slider
+            # thumb_color: 0, 0.7411, 0.87, 1
+            # thumb_color_down: 1,1,1,1
+            min: 0
+            max: 50
+            value: root.age
+            hint_radius: 20,20
+            hint_text_color: 0, 0.7411, 0.87, 1
+            hint_bg_color: self.parent.md_bg_color
+    GridLayout:
+        orientation: "horizontal"
+        cols: 2
+        MDLabel:
+            text: "Gender"
+        BoxLayout:
+            orientation: "vertical"
+            GridLayout:
+                cols: 2
+                orientation:"horizontal"
+                MDLabel:
+                    width: self.texture_size[0]
+                    text: "Male"
+                Check:
+                    id: male_check
+                    gender: 'Male'
+                    pos_hint: {'center_x': .5, 'center_y': .5}
+            GridLayout:
+                cols: 2
+                orientation:"horizontal"
+                MDLabel:
+                    width: self.texture_size[0]
+                    text: "Female"
+                Check:
+                    id: female_check
+                    gender: 'Female'
+                    pos_hint: {'center_x': .5, 'center_y': .5}
+
+# endregion
+
+# endregion

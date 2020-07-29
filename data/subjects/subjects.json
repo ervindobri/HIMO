@@ -1,0 +1,70 @@
+{
+    "Subjects": [
+        {
+            "Name": "Ervin",
+            "Age": 22,
+            "Gender": "Male"
+        },
+        {
+            "Name": "Szilvike",
+            "Age": 20,
+            "Gender": "Female"
+        },
+        {
+            "Name": "Ferineni",
+            "Age": 14,
+            "Gender": "Female"
+        },
+        {
+            "Name": "Szilviasdsa",
+            "Age": 10,
+            "Gender": "Male"
+        },
+        {
+            "Name": "Lanyvagyok",
+            "Age": 27,
+            "Gender": "Female"
+        },
+        {
+            "Name": "Neni",
+            "Age": "14",
+            "Gender": "Male"
+        },
+        {
+            "Name": "Helloka",
+            "Age": 5,
+            "Gender": "Male"
+        },
+        {
+            "Name": "Zalan",
+            "Age": 11,
+            "Gender": "Male"
+        }
+    ],
+    "Sessions": [
+        {
+            "Tiptoe": 1,
+            "Heel": 1
+        },
+        {
+            "Tiptoe": 4,
+            "Heel": 7
+        },
+        {
+            "Tiptoe": 2,
+            "Heel": 3
+        },
+        {
+            "Tiptoe": 5,
+            "Heel": 5
+        },
+        {
+            "Tiptoe": 2,
+            "Heel": 7
+        },
+        {
+            "Tiptoe": 3,
+            "Heel": 3
+        }
+    ]
+}
