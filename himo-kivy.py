@@ -12,28 +12,18 @@ from multiprocessing import Queue
 
 from kivy import Config
 from kivy.animation import Animation
-from kivy.clock import Clock
-from kivy.graphics.context_instructions import Color
-from kivy.graphics.vertex_instructions import Ellipse
 
-from kivy.lang import Builder
-from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.behaviors import TouchRippleBehavior
-from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.gridlayout import GridLayout
+
 from kivy.uix.image import Image
 
 from kivy.uix.recycleview import RecycleView
 from kivy.uix.screenmanager import ScreenManager, Screen
-from kivymd.icon_definitions import md_icons
 from kivymd.material_resources import dp
 
 from kivymd.uix.card import MDCard
 from kivy.core.window import Window
-import kivy.uix.actionbar as AB
-from kivy.uix.scrollview import ScrollView
-from kivy.uix.textinput import TextInput
-from kivy.core.text import Label as CoreLabel
+
 import myo
 import kivy
 
@@ -47,10 +37,8 @@ from kivymd.theming import ThemableBehavior
 from kivymd.uix.behaviors import HoverBehavior, RectangularRippleBehavior, RectangularElevationBehavior
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton, MDFloatingActionButton, MDRectangleFlatButton, MDRoundFlatButton
-from kivymd.uix.datatables import MDDataTable
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.dropdownitem import MDDropDownItem
-from kivymd.uix.expansionpanel import MDExpansionPanel, MDExpansionPanelOneLine
 from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.imagelist import SmartTileWithStar, SmartTileWithLabel
 from kivymd.uix.label import MDLabel
@@ -61,7 +49,6 @@ import HIMO
 MDDropDownItem
 from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.snackbar import Snackbar
-from kivymd.uix.slider import MDSlider
 
 from kivymd.utils import asynckivy
 from akivymd.uix.piechart import AKPieChart
@@ -89,7 +76,7 @@ Window.size = MAX_SIZE
 
 
 
-# This class from Myo-python SDK listens to EMG signals from armband
+# This class from Myo-python SDK listens to EMG signals from armband and other events
 class Listener(myo.DeviceListener):
 
     def __init__(self):
