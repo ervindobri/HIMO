@@ -39,6 +39,11 @@
             "Name": "Zalan",
             "Age": 11,
             "Gender": "Male"
+        },
+        {
+            "Name": "Daniel",
+            "Age": 22,
+            "Gender": "Male"
         }
     ],
     "Sessions": [

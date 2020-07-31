@@ -939,7 +939,7 @@ Screen:
                                                     size: self.size
                                                     # size: min(ellipse_container.size[0],ellipse_container.size[1]), min(ellipse_container.size[0],ellipse_container.size[1])
                                     MDLabel:
-                                        theme_text_color: "ContrastParentBackground"
+                                        # theme_text_color: "ContrastParentBackground"
                                         font_style: "H5"
                                         id: tiptoe
                                         valign: "center"
@@ -1000,7 +1000,7 @@ Screen:
                                                     size: self.size
                                                     # size: self.parent.size[0], self.parent.size[0]
                                     MDLabel:
-                                        theme_text_color: "ContrastParentBackground"
+                                        # theme_text_color: "ContrastParentBackground"
                                         font_style: "H5"
                                         id: heel
                                         valign: "center"
@@ -1405,7 +1405,7 @@ Screen:
                             texT: ""
                             # font_style: "H6"
                             font_size: self.parent.height / 2
-                            halign: "center"
+                            # halign: "center"
                 # endregion
                 #region NEW_MODEL
                 MDBoxLayout:
@@ -1446,6 +1446,7 @@ Screen:
                                     text: "START"
                                     on_release:
                                         # print("START RE TRAIN")
+                                        app.check_myo_sync()
                                         root.prepare_model()
                                 AnchorLayout:
                                     anchor_x: "center"

@@ -10,6 +10,7 @@ from multiprocessing import Queue
 
 from kivy import Config
 from kivy.animation import Animation
+from kivy.cache import Cache
 
 from kivy.uix.behaviors import TouchRippleBehavior
 
@@ -69,8 +70,10 @@ Window.clearcolor = GREY
 Config.set('graphics', 'resizable', '0')
 Config.set('graphics', 'fullscreen', '0')
 Window.size = MAX_SIZE
-Config.set('modules', 'monitor', '1') #Show fps and input debug bar
+Config.set('modules', 'monitor', '') #Show fps and input debug bar
 
+# register a new Cache
+Cache.register('test', limit=10)
 
 
 # This class from Myo-python SDK listens to EMG signals from armband and other events
@@ -839,6 +842,7 @@ class Exercises(Screen):
         # TODO: dropdown with selectable models
         self.subject = ""
         self.subjects = []
+        self.model = None
         self.selected_session = False
         self.sessions = []
         self.q = queue.Queue()
@@ -888,7 +892,7 @@ class Exercises(Screen):
         # print("Screen size SET")
         Window.size = MAX_SIZE
         # Clock.schedule_once(self.on_start, 0)
-        gc.collect()
+        # gc.collect()
 
     def on_start(self, *l):
         bar = self.ids.heel_circ_parent.children[0]
@@ -942,7 +946,9 @@ class Exercises(Screen):
             width_mult=6,
         )
         # DEBUG CPB
-
+        del bar
+        del data
+        gc.collect()
         # self.active_page = 1
         # Clock.schedule_interval(self.animate, 0.01)
 
@@ -1196,6 +1202,8 @@ class Exercises(Screen):
 
             # START PREDICTING GESTURES
             # Clock.schedule_once(self.start_doing_exercise, self.exercise_timeout)
+            Clock.schedule_once(self.get_model)
+
             Clock.schedule_once(self.get_result, self.exercise_timeout)
 
             Clock.unschedule(self.decr_countdown)
@@ -1268,7 +1276,8 @@ class Exercises(Screen):
                     Clock.unschedule(self.get_result)
                     Clock.unschedule(self.start_timer)
                     Clock.unschedule(self.timer)
-
+                    Clock.unschedule(self.exercise_callback)
+                    HIMO.session_finished = False
                     Clock.schedule_once(self.reset_progress)
                     self.countdown = self.startcountdown
                     self.tiptoe_timer = '0:00'
@@ -1292,11 +1301,14 @@ class Exercises(Screen):
             # himo_app.root.screen_manager.current_screen..snackbar_show("MYO Armband is  not connected")
             himo_app.show_snackbar("Your MYO Armband is  not connected and synced!", ERROR_ICON, RED_HEX)
 
+    def get_model(self, *l):
+        self.model = load_model(result_path + self.subject + '_realistic_model.h5')
+
     def get_result(self, *l):
         try:
             self.q = Queue()
             # t = threading.Thread(target=PredictGestures, args=[self.subject, self.q])
-            t = threading.Thread(target=PredictGesturesLoop, args=[self.subject, self.q])
+            t = threading.Thread(target=PredictGesturesLoop, args=[self.model, self.q])
             t.start()
             # t.join()
 
@@ -1961,7 +1973,7 @@ class ExercisesContent(MDBoxLayout):
 
     train_value = NumericProperty(69)
     trainable_datafile = StringProperty("filename.txt")
-
+    # instructions = StringProperty('')
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.q = queue.Queue()
@@ -1982,70 +1994,83 @@ class ExercisesContent(MDBoxLayout):
 
     def on_start(self, *l):
         self.load_models()
-        gc.collect()
+
+        self.instructions = HIMO.instructions
 
 
     def load_models(self):
-        for filename in os.listdir(himo_app.result_path):
-            if filename.endswith(".h5"):
+        if Cache.get('test', 'models_menu') == None and \
+                Cache.get('test', 'subjects_menu') == None:
+            for filename in os.listdir(himo_app.result_path):
+                if filename.endswith(".h5"):
+                    self.menu_items.append(
+                        {
+                            "viewclass": "HoverItem",
+                            "text": filename,
+                            "theme_text_color": "Custom",
+                            "text_color": [0, 0, 0, 1],
+                        }
+                    )
+            self.models_menu = MDDropdownMenu(
+                caller=self.ids.drop_models,
+                items=self.menu_items,
+                position="auto",
+                callback=self.set_item,
+                selected_color=MYOBLUE,
+                width_mult=6,
+            )
+
+            with open(himo_app.subjects_file, 'r') as data_file:
+                data = json.load(data_file)
+            self.menu_items.clear()
+            for element in data['Subjects']:
                 self.menu_items.append(
                     {
                         "viewclass": "HoverItem",
-                        "text": filename,
+                        "text": element['Name'],
                         "theme_text_color": "Custom",
                         "text_color": [0, 0, 0, 1],
                     }
                 )
-        self.models_menu = MDDropdownMenu(
-            caller=self.ids.drop_models,
-            items=self.menu_items,
-            position="auto",
-            callback=self.set_item,
-            selected_color=MYOBLUE,
-            width_mult=6,
-        )
-        with open(himo_app.subjects_file, 'r') as data_file:
-            data = json.load(data_file)
-        self.menu_items.clear()
-        for element in data['Subjects']:
-            self.menu_items.append(
-                {
-                    "viewclass": "HoverItem",
-                    "text": element['Name'],
-                    "theme_text_color": "Custom",
-                    "text_color": [0, 0, 0, 1],
-                }
+            self.subjects_menu = MDDropdownMenu(
+                # id="dropdown_menu",
+                caller=self.ids.drop_subjects,
+                items=self.menu_items,
+                position="auto",
+                callback=self.set_subject,
+                selected_color=MYOBLUE,
+                width_mult=4,
             )
-        self.subjects_menu = MDDropdownMenu(
-            # id="dropdown_menu",
-            caller=self.ids.drop_subjects,
-            items=self.menu_items,
-            position="auto",
-            callback=self.set_subject,
-            selected_color=MYOBLUE,
-            width_mult=4,
-        )
-        gc.collect()
+            Cache.append('test', 'models_menu', self.models_menu)
+
+            Cache.append('test', 'subjects_menu', self.subjects_menu)
+
+
+            print("SAVING TO CACHE")
+        else:
+            print("LOADING FROM CACHE")
+            self.models_menu = Cache.get('test', 'models_menu')
+            self.subjects_menu = Cache.get('test', 'subjects_menu')
+
+        # Delete unused var
+        # del data
+        # gc.collect()
 
 
     def set_subject(self, instance):
         self.ids.drop_subjects.set_item(instance.text)
         self.selected_subject = instance.text
         self.subjects_menu.dismiss()
-        gc.collect()
 
 
     def set_item(self, instance):
         self.ids.drop_models.set_item(instance.text)
         self.selected_model = instance.text
         self.models_menu.dismiss()
-        gc.collect()
 
 
     def retrain_model(self, *args):
         # TODO: retrain selected network model
-        gc.collect()
-
         if not self.retrain_active:
             try:
                 data = np.loadtxt(himo_app.result_path + '/' + self.selected_model.split('_')[0] + '.txt')
@@ -2055,6 +2080,9 @@ class ExercisesContent(MDBoxLayout):
                 t.start()
                 self.retrain_active = True
 
+                del data
+                del name
+                gc.collect()
             except Exception as e:
                 if hasattr(e, 'message'):
                     print(e.message)
@@ -2150,10 +2178,11 @@ class ExercisesContent(MDBoxLayout):
 
     def update_instructions(self, *args):
         self.ids.instructions.text = HIMO.instructions
+        # self.instructions = HIMO.instructions
 
     def prepare_model(self):
         try:
-            Clock.schedule_interval(self.update_instructions, 0.3)
+            Clock.schedule_interval(self.update_instructions, 0.2)
             name = self.selected_subject
             self.trainable_datafile = name + '.txt'
             t = threading.Thread(target=PrepareTrainingData, args=[name, self.q])
@@ -2188,7 +2217,6 @@ class Upload(Screen):
                     # print(child)
                     self.ids.tabs_layout.remove_widget(child)
                     break
-            gc.collect()
             options = {"Subjects": SubjectsContent(),
                        "Session": SessionContent(),
                        "Exercises": ExercisesContent()
@@ -2196,6 +2224,7 @@ class Upload(Screen):
             self.widget = options[text]
             self.ids.tabs_layout.add_widget(self.widget)
             del options
+
 
 
     def write_json(self, data):

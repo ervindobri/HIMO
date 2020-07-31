@@ -245,13 +245,12 @@ def PredictGestures(subjectname, q, *largs):
         result = ''
         q.put(result)
 
-def PredictGesturesLoop(subjectname, q, *largs):
+def PredictGesturesLoop(model, q, *largs):
     global number_of_samples
     # global result
     averages = number_of_samples / 50
     # Initializing array for verification_averages
     validation_averages = np.zeros((int(averages), 8))
-    model = load_model(result_path + subjectname + '_realistic_model.h5')
     # enter = ''
 
     result = ''
@@ -260,11 +259,11 @@ def PredictGesturesLoop(subjectname, q, *largs):
     listener = Listener(number_of_samples)
 
     while not session_finished:
-        print(session_finished)
+        # print(session_finished)
         # region DO_WORK
         try:
             # print("Show a foot gesture and press ENTER to get its classification!")
-            hub.run(listener.on_event, 5000)
+            hub.run(listener.on_event, 1000)
             # Here we send the received number of samples making them a list of 1000 rows 8 columns
             validation_set = np.array((data_array[0]))
             data_array.clear()
@@ -290,10 +289,13 @@ def PredictGesturesLoop(subjectname, q, *largs):
             # print("Tiptoe stand")
             result = "TIP TOE"
             q.put(result)
+            # time.sleep(0.5)
         elif predicted_value == 1:
             # print("Toe Crunches ")
             result = "TOE CRUNCH"
             q.put(result)
+            # time.sleep(0.5)
+
         else:
             # print("Rest gesture")
             result = ''
@@ -364,7 +366,7 @@ def TrainEMG(conc_array, name, q):
     print("Fitting training data to the model...")
     instructions = "Fitting training data to the model..."
     history = model.fit(train_data, train_labels, epochs=300, validation_data=(validation_data, validation_labels),
-                        batch_size=16, verbose=0, callbacks=[CustomCallback()])
+                        batch_size=16, verbose=2, callbacks=[CustomCallback()])
 
     print("Saving model for later...")
     save_path = result_path + name + '_realistic_model.h5'
@@ -421,8 +423,6 @@ def PrepareTrainingData(name, q):
 
     # Initialize the SDK of Myo Armband
     myo.init('X:\\Sapientia EMTE\\Szakmai Gyakorlat\\v2\\HIMO\\myo64.dll')
-    hub = myo.Hub()
-    listener = Listener(number_of_samples)
 
     # region TIPTOE_DATA
     instructions = "Stand on your toes!"
@@ -574,20 +574,20 @@ if __name__ == '__main__':
     # DEBUG
 
     # region PREDICT_CONSTANTLY
-    hub = myo.Hub()
-    number_of_samples = 100
-    listener = Listener(number_of_samples)
-    counter = 0
-    q = queue.Queue()
-    averages = number_of_samples / 50
-    # # Initializing array for verification_averages
-    validation_averages = np.zeros((int(averages), 8))
-    model = load_model(result_path + 'Ervin' + '_realistic_model.h5')
-
-
-    while counter < 5:
-        PredictGestures('Ervin', q)
-        counter+=1
+    # hub = myo.Hub()
+    # number_of_samples = 100
+    # listener = Listener(number_of_samples)
+    # counter = 0
+    # q = queue.Queue()
+    # averages = number_of_samples / 50
+    # # # Initializing array for verification_averages
+    # validation_averages = np.zeros((int(averages), 8))
+    # model = load_model(result_path + 'Ervin' + '_realistic_model.h5')
+    #
+    #
+    # while counter < 5:
+    #     PredictGestures('Ervin', q)
+    #     counter+=1
 
     # endregion
 
@@ -647,14 +647,14 @@ if __name__ == '__main__':
 
 
     # region PREPARE AND TRAIN
-    # q = queue.Queue()
+    q = queue.Queue()
     # PrepareTrainingData('teszt', q)
     # res = q.get()
     # # print(res)
     #
     #
-    # data = np.loadtxt(result_path + 'teszt' + '.txt')
-    # TrainEMG(data, 'teszt', q)
+    data = np.loadtxt(result_path + 'teszt' + '.txt')
+    TrainEMG(data, 'teszt', q)
 
     # endregion
     pass
