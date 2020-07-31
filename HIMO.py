@@ -208,16 +208,17 @@ def PredictGestures(subjectname, q, *largs):
 
     # while not session_finished:
     try:
-        print("Show a foot gesture and press ENTER to get its classification!")
-        hub.run(listener.on_event, 10000)
+        # print("Show a foot gesture and press ENTER to get its classification!")
+        hub.run(listener.on_event, 5000)
         # Here we send the received number of samples making them a list of 1000 rows 8 columns
         validation_set = np.array((data_array[0]))
         data_array.clear()
-    except:
-        while not restart_process():
-            pass
-        # Wait for 3 seconds until Myo Connect.exe starts
-        time.sleep(3)
+    except Exception as e:
+        if hasattr(e, 'message'):
+            print(e.message)
+        else:
+            print(e)
+        pass
 
     validation_set = np.absolute(validation_set)
     div = 50
@@ -232,18 +233,73 @@ def PredictGestures(subjectname, q, *largs):
     predictions = model.predict(validation_data, batch_size=16)
     predicted_value = np.argmax(predictions[0])
     if predicted_value == 0:
-        print("Tiptoe stand")
+        # print("Tiptoe stand")
         result = "TIP TOE"
         q.put(result)
     elif predicted_value == 1:
-        print("Toe Crunches ")
+        # print("Toe Crunches ")
         result = "TOE CRUNCH"
         q.put(result)
     else:
-        print("Rest gesture")
+        # print("Rest gesture")
         result = ''
         q.put(result)
 
+def PredictGesturesLoop(subjectname, q, *largs):
+    global number_of_samples
+    # global result
+    averages = number_of_samples / 50
+    # Initializing array for verification_averages
+    validation_averages = np.zeros((int(averages), 8))
+    model = load_model(result_path + subjectname + '_realistic_model.h5')
+    # enter = ''
+
+    result = ''
+    hub = myo.Hub()
+    number_of_samples = 100
+    listener = Listener(number_of_samples)
+
+    while not session_finished:
+        print(session_finished)
+        # region DO_WORK
+        try:
+            # print("Show a foot gesture and press ENTER to get its classification!")
+            hub.run(listener.on_event, 5000)
+            # Here we send the received number of samples making them a list of 1000 rows 8 columns
+            validation_set = np.array((data_array[0]))
+            data_array.clear()
+        except Exception as e:
+            if hasattr(e, 'message'):
+                print(e.message)
+            else:
+                print(e)
+            pass
+        validation_set = np.absolute(validation_set)
+        div = 50
+        # We add one because iterator below starts from 1
+        batches = int(number_of_samples / div) + 1
+        for i in range(1, batches):
+            validation_averages[i - 1, :] = np.mean(validation_set[(i - 1) * div:i * div, :], axis=0)
+
+        validation_data = validation_averages
+        # print("Verification matrix shape is ", validation_data.shape)
+
+        predictions = model.predict(validation_data, batch_size=16)
+        predicted_value = np.argmax(predictions[0])
+        if predicted_value == 0:
+            # print("Tiptoe stand")
+            result = "TIP TOE"
+            q.put(result)
+        elif predicted_value == 1:
+            # print("Toe Crunches ")
+            result = "TOE CRUNCH"
+            q.put(result)
+        else:
+            # print("Rest gesture")
+            result = ''
+            q.put(result)
+        # endregion DO_WORK
+        # time.sleep(0.3)
 
 # This method is responsible for training EMG data
 def TrainEMG(conc_array, name, q):
@@ -377,7 +433,7 @@ def PrepareTrainingData(name, q):
             hub = myo.Hub()
             listener = Listener(number_of_samples)
             # input("Stand on your toes!")
-            hub.run(listener.on_event, 10000)
+            hub.run(listener.on_event, 20000)
             tiptoe_training_set = np.array((data_array[0]))
             data_array.clear()
             break
@@ -404,7 +460,7 @@ def PrepareTrainingData(name, q):
             hub = myo.Hub()
             listener = Listener(number_of_samples)
             # input("Crunch your toes!")
-            hub.run(listener.on_event, 10000)
+            hub.run(listener.on_event, 20000)
             toe_crunches_training_set = np.array((data_array[0]))
             data_array.clear()
             break
@@ -430,7 +486,7 @@ def PrepareTrainingData(name, q):
         try:
             hub = myo.Hub()
             listener = Listener(number_of_samples)
-            hub.run(listener.on_event, 10000)
+            hub.run(listener.on_event, 20000)
             rest_training_set = np.array((data_array[0]))
             data_array.clear()
             break

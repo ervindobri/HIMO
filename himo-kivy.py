@@ -1,4 +1,3 @@
-import concurrent
 import glob
 import json
 import os
@@ -7,7 +6,6 @@ import threading
 import time
 from datetime import datetime, timedelta
 from math import floor
-from multiprocessing.context import Process
 from multiprocessing import Queue
 
 from kivy import Config
@@ -46,7 +44,6 @@ from kivymd.uix.list import OneLineAvatarIconListItem, IRightBodyTouch, IRightBo
 from kivymd.uix.menu import MDDropdownMenu
 
 import HIMO
-MDDropDownItem
 from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.snackbar import Snackbar
 
@@ -72,11 +69,12 @@ Window.clearcolor = GREY
 Config.set('graphics', 'resizable', '0')
 Config.set('graphics', 'fullscreen', '0')
 Window.size = MAX_SIZE
-
+Config.set('modules', 'monitor', '1') #Show fps and input debug bar
 
 
 
 # This class from Myo-python SDK listens to EMG signals from armband and other events
+
 class Listener(myo.DeviceListener):
 
     def __init__(self):
@@ -156,8 +154,10 @@ class Home(Screen):
 
     def restart_myo(self, *args):
         try:
-            threading.Thread(target=restart_process).start()
+            t = threading.Thread(target=restart_process)
+            t.start()
             print("RESTARTING MYO CONNECT!")
+            del t
         except:
             print("Error.")
 
@@ -296,6 +296,9 @@ class ImageTile(TouchRippleBehavior, SmartTileWithLabel):
                     # ),
                 ],
             )
+            del img_path
+            del path
+            gc.collect()
         self.dialog.open()
         # self.dialog.buttons[0].bind(on_release=self.dialog.close())
 
@@ -408,6 +411,11 @@ class ResultContent(MDBoxLayout):
         bar = self.ids.efficiency_container.children[0]
         bar.value = int(self.percentage)
 
+        del bar
+        del total_results
+        del heel_results
+        del tiptoe_results
+
 class ResultCard(MDCard, ThemableBehavior, HoverBehavior):
     '''Custom item implementing hover behavior.'''
     efficiency = StringProperty('69%')
@@ -457,6 +465,7 @@ class ResultCard(MDCard, ThemableBehavior, HoverBehavior):
         '''The method will be called when the mouse cursor goes beyond
         the borders of the current widget.'''
         Clock.schedule_once(self.hover_back)
+        # self.dialog = None
 
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
@@ -493,8 +502,7 @@ class ResultCard(MDCard, ThemableBehavior, HoverBehavior):
 
     def close_dialog(self, *l):
         self.dialog.dismiss()
-        # self.dialog = None
-        # gc.collect()
+        self.dialog = None
 
 
 
@@ -582,7 +590,12 @@ class Browse(Screen):
         # Display all models
         self.set_available_cards("", True)
 
-
+        del counter
+        del data
+        del fpath
+        del image
+        del nr_of_images
+        gc.collect()
 
         # Display expansion panel
 
@@ -602,6 +615,7 @@ class Browse(Screen):
 
         self.update_image_list(instance.text, True)
         self.menu.dismiss()
+        del bar
         gc.collect()
 
 
@@ -648,16 +662,17 @@ class Browse(Screen):
             if element.get(name):
                 # print(element[name])
                 percentage = element[name]['Total'][0]['Correct'] * 100 / (
-                            element[name]['Total'][0]['Correct'] + element[name]['Total'][0]['Missed'])
+                        element[name]['Total'][0]['Correct'] + element[name]['Total'][0]['Missed'])
                 card = ResultCard()
                 card.efficiency = str(int(percentage)) + ' %'
                 card.normal_color = card.calculate_card_color()
                 card.result_data = element[name]
                 self.sum_of_efficiencies += int(percentage)
-
                 self.ids.scroll_results.add_widget(card)
+                del card
             else:
                 pass
+        gc.collect()
 
     def update_image_list(self, text="", search=False):
         # print(text)
@@ -693,6 +708,10 @@ class Browse(Screen):
                     if model in filename and filename.endswith(".png"):
                         fpath = self.figures + "/" + filename
                         add_image(self, fpath, filename)
+
+        del model
+        del fpath
+        gc.collect()
 
     def set_available_cards(self, text="", search=False):
         '''Builds a list of icons for the screen MDIcons.'''
@@ -978,11 +997,13 @@ class Exercises(Screen):
             HIMO.session_finished = True
             Clock.unschedule(self.check_for_switch_results)
             Clock.unschedule(self.timer)
+            Clock.unschedule(self.exercise_callback)
+            Clock.unschedule(self.get_result)
+
 
             Clock.schedule_once(self.set_next_page, .5)
             self.create_charts()
             self.ids.start_button.text = "RESTART"
-            Clock.unschedule(self.get_result)
 
     def set_next_page(self, *l):
         self.active_page += 1
@@ -1174,13 +1195,13 @@ class Exercises(Screen):
             Clock.schedule_once(self.start_timer_thread, self.exercise_timeout)
 
             # START PREDICTING GESTURES
-            Clock.schedule_once(self.start_doing_exercise, self.exercise_timeout)
-            # Clock.schedule_once(self.get_result, self.exercise_timeout)
+            # Clock.schedule_once(self.start_doing_exercise, self.exercise_timeout)
+            Clock.schedule_once(self.get_result, self.exercise_timeout)
 
             Clock.unschedule(self.decr_countdown)
 
     def start_doing_exercise(self, *l):
-        Clock.schedule_interval(self.get_result, .7)
+        Clock.schedule_interval(self.get_result, 1)
 
     def start_timer_thread(self, *args):
         threading.Thread(target=self.start_timer).start()
@@ -1195,14 +1216,15 @@ class Exercises(Screen):
 
     def exercise_callback(self, *l):
         try:
-            self.result = self.q.get()
+            self.result = self.q.get_nowait()
+            # self.result = self.q.get()
+            print("RESULT: " + self.result)
+
             if self.result is not '':
                 Clock.schedule_once(self.add_progress)
-            else:
-                print("UNKNOWN EXERCISE / TOO SOON")
-        except:
-            print("UNKNOWN EXERCISE / TOO SOON")
 
+        except Exception as e:
+            # print("EXCEPTION")
             pass
 
     # Subject name to load neural network model
@@ -1219,6 +1241,7 @@ class Exercises(Screen):
     def start_exercises(self, *args):
         if himo_app.myo_synced:
             if self.subject is not "" or self.selected_session:
+                HIMO.session_finished = False
                 if not self.session_started:
                     print("STARTED")
                     # TODO: DONE start timer
@@ -1272,13 +1295,16 @@ class Exercises(Screen):
     def get_result(self, *l):
         try:
             self.q = Queue()
-            t = threading.Thread(target=PredictGestures, args=[self.subject, self.q])
+            # t = threading.Thread(target=PredictGestures, args=[self.subject, self.q])
+            t = threading.Thread(target=PredictGesturesLoop, args=[self.subject, self.q])
             t.start()
+            # t.join()
 
             # Call evaluation almost instantly
             # Clock.schedule_interval(self.exercise_callback, .1)
-            Clock.schedule_once(self.exercise_callback, .1)
-            # t.join()
+            # self.result = self.q.get_nowait()
+            # self.result = self.q.get()
+            Clock.schedule_interval(self.exercise_callback, .1)
 
         except Exception as e:
             if hasattr(e, 'message'):
